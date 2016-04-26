@@ -1,0 +1,3 @@
+[submodule "vendor/github.com/xanzy/go-gitlab"]
+	path = vendor/github.com/xanzy/go-gitlab
+	url = https://github.com/xanzy/go-gitlab

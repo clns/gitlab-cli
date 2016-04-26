@@ -1,0 +1,30 @@
+language: go
+
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker pull gitlab/gitlab-ce
+  - docker run -d --name gitlab -p 80:80 gitlab/gitlab-ce
+  - go get -d ./...
+  - sleep 120 # GitLab is like a sloth
+
+install: |
+  docker exec gitlab sudo -u gitlab-psql /opt/gitlab/embedded/bin/psql --port 5432 -h /var/opt/gitlab/postgresql -d gitlabhq_production -c "
+    INSERT INTO labels (title, color, template) VALUES ('feature', '#000000', true);
+    INSERT INTO labels (title, color, template) VALUES ('bug', '#ff0000', true);
+    UPDATE users SET authentication_token='secret' WHERE username='root';"
+
+script:
+  - GITLAB_URL="http://127.0.0.1" GITLAB_TOKEN="secret" GO15VENDOREXPERIMENT="1" go test -v ./gitlab
+
+go:
+  - 1.5
+  - 1.6
+  - tip
+
+matrix:
+  allow_failures:
+    - go: tip
