@@ -1,9 +1,13 @@
 # gitlab-cli [![Build Status](https://travis-ci.org/clns/gitlab-cli.svg?branch=master)](https://travis-ci.org/clns/gitlab-cli)
 
-Cli commands for performing actions against GitLab repositories.
+CLI commands for performing actions against GitLab repositories. The main reasons for building this tool is to be able to use it without any prerequisites and to deal with global labels, which GitLab API doesn't expose.
 
 - [Usage](#usage)
+  - [Labels](#labels)
+  - [Specifying a repository](#specifying-a-repository)
+  - [The config file](#the-config-file)
 - [Install](#install)
+  - [Update](#update)
 - [Development](#development)
 
 ## Usage
@@ -17,18 +21,18 @@ See help for all available commands (`gitlab-cli -h`).
 > GitLab Limitation: Currently there's no way to [access global labels through the API](https://twitter.com/gitlab/status/724619173477924865), so this tool provides a workaround for copying them into a repository. Note that you should configure the global labels manually in GitLab.
 
 ```sh
-gitlab-cli label copy -u https://gitlab.com/<USER>/<REPO> -t <TOKEN>
+gitlab-cli label copy -U https://gitlab.com/<USER>/<REPO> -t <TOKEN>
 ```
 
-> Tip: To avoid specifying `-u` and `-t` every time you refer to a repository, you can save the details of it into the config file with `gitlab-cli config repo save -r <NAME> -u <URL> -t <TOKEN>`, then refer to it simply as `-r <NAME>`.
+> Tip: To avoid specifying `-U` and `-t` every time you refer to a repository, you can use the config file to save the details of it. See [Specifying a repository](#specifying-a-repository).
 
 ##### Copy labels from one repository to another
 
 ```sh
-gitlab-cli label copy -r <NAME> <USER>/<SOURCE_REPO>
+gitlab-cli label copy -r <NAME> <GROUP>/<REPO>
 ```
 
-> Tip: The above command copies labels between repositories on the same GitLab instance. To copy from a different GitLab instance, first save the source repo in the config as explained above and specify its name as argument instead of the path.
+> Tip: The above command copies labels between repositories on the same GitLab instance. To copy from/to a different GitLab instance, use the config file as explained in [Specifying a repository](#specifying-a-repository).
 
 ##### Update label(s) based on a regex match
 
@@ -46,7 +50,61 @@ gitlab-cli label update -r <NAME> --regex <REGEX>
 
 ### TODO
 
-Currently only the label commands are useful. Other commands can be added as needed.
+Currently only the label commands are useful. Other commands can be added as needed. Feel free to open pull requests or issues.
+
+### Specifying a repository
+
+There are 2 ways to specify a repository:
+
+1. By using the `--url (-U)` and `--token (-t)` flags (or `--user (-u)` and `--password (-p)` instead of token) with each command. This is the easiest to get started but requires a lot of typing.
+2. By saving the repository details in the config file and referring to it by its saved name using `--repo (-r)` (e.g. `-r myrepo`)
+
+Example:
+
+```sh
+gitlab-cli label copy -U https://git.my-site.com/my_group/my_repo -t ghs93hska
+```
+
+is the same as this, but the repo gets saved in the config file and we can refer to it later by its name:
+
+```sh
+gitlab-cli config repo save -r myrepo -U https://git.my-site.com/my_group/my_repo -t ghs93hska
+gitlab-cli label copy -r myrepo
+```
+
+> Note: Some commands like [`label copy`](#copy-labels-from-one-repository-to-another) allow you to specify a repository by its path (e.g. `my_group/my_repo`), in which case the repository is considered on the same GitLab instance as the target repo.
+
+#### Using user and password instead of token
+
+You can specify your GitLab login (user or email) - `--user (-u)` - and password - `--password (-p)` - instead of the token in any command, if this is easier for you. Example:
+
+```sh
+gitlab-cli config repo save -r myrepo -U https://git.my-site.com/my_group/my_repo -u my_user -p my_pass
+```
+
+### The config file
+
+The default location of the config file is `$HOME/.gitlab-cli.yaml` and it is useful for saving repositories and then refer to them by their names. A sample config file looks like this:
+
+```yaml
+repos:
+  myrepo1:
+    url: https://git.mysite.com/group/repo1
+    token: Nahs93hdl3shjf
+  myrepo2:
+    url: https://git.mysite.com/group/repo2
+    token: Nahs93hdl3shjf
+  myother:
+    url: https://git.myothersite.com/group/repo1
+    token: OA23spfwuSalos
+```
+
+But there's no need to manually edit this file. Instead use the config commands to modify it (see `gitlab-cli config -h`). Some useful config commands are:
+
+- `gitlab-cli config cat` - print the entire config file contents
+- `gitlab-cli config repo ls` - list all saved repositories
+- `gitlab-cli config repo save ...` - save a repository
+- `gitlab-cli config repo show -r <repo>` - show the details of a saved repository
 
 ## Install
 
@@ -59,6 +117,10 @@ Currently only the label commands are useful. Other commands can be added as nee
     ```sh
     gitlab-cli version
     ```
+
+### Update
+
+To update, simply run the same command as for install from the [releases page](https://github.com/clns/gitlab-cli/releases). The existing binary will be overwritten by the latest version.
 
 ## Development
 
