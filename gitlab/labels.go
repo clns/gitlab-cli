@@ -1,12 +1,12 @@
 package gitlab
 
 import (
-	"log"
-
 	"fmt"
 	"regexp"
 
 	"strings"
+
+	"os"
 
 	gogitlab "github.com/xanzy/go-gitlab"
 )
@@ -99,7 +99,7 @@ func (srv *Labels) CopyGlobalLabelsTo(pid interface{}) error {
 	}
 	defer func() {
 		if _, err := srv.client.Projects.DeleteProject(*proj.ID); err != nil {
-			log.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 		}
 	}()
 

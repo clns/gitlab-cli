@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -23,7 +23,7 @@ var outputs = []*output{
 func main() {
 	for _, o := range outputs {
 		vars := []string{"GOOS=" + o.GOOS, "GOARCH=" + o.GOARCH}
-		log.Printf("%s go build -o build/%s main.go ...", strings.Join(vars, " "), o.File)
+		fmt.Fprintf(os.Stdout, "%s go build -o build/%s main.go ...", strings.Join(vars, " "), o.File)
 		cmd := exec.Command("go", "build", "-o", filepath.Join("build", o.File), "main.go")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -31,8 +31,8 @@ func main() {
 		env = append(env, vars...)
 		cmd.Env = env
 		if err := cmd.Run(); err != nil {
-			log.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 		}
-		log.Println("done")
+		fmt.Fprintln(os.Stdout, "done")
 	}
 }

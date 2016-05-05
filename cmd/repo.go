@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"log"
+	"os"
 
 	"github.com/clns/gitlab-cli/gitlab"
 	"github.com/howeyc/gopass"
@@ -68,7 +68,7 @@ func (r *Repo) SaveToConfig() error {
 	for name, _ := range viper.GetStringMap("repos") {
 		var rep *repoMap
 		if err := viper.UnmarshalKey("repos."+name, &rep); err != nil {
-			log.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 		}
 		repos[name] = rep
 	}
