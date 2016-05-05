@@ -120,7 +120,7 @@ But there's no need to manually edit this file. Instead use the config commands 
 
 ### Update
 
-To update, simply run the same command as for install from the [releases page](https://github.com/clns/gitlab-cli/releases). The existing binary will be overwritten by the latest version.
+When running any command, the tool will notify you if a new update is available (e.g. `New update available: 1.0.1. Run 'gitlab-cli update' to update.`), and you can simply run `gitlab-cli update` to update.
 
 ## Development
 
