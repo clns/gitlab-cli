@@ -45,12 +45,12 @@ func (srv *Labels) UpdateWithRegex(pid interface{}, opts *gogitlab.UpdateLabelOp
 				opts.NewName = ""
 			}
 			if _, _, err := srv.UpdateLabel(pid, opts); err != nil {
-				errs = append(errs, fmt.Sprintf("updating '%s' failed: %v", label.Name, err))
+				errs = append(errs, fmt.Sprintf("'%s' failed to update: %v", label.Name, err))
 			}
 		}
 	}
 	if len(errs) > 0 {
-		return fmt.Errorf("error: failed to update (some) labels with the following errors:\n%s", strings.Join(errs, "\n"))
+		return fmt.Errorf("failed to update (some) labels with the following errors:\n%s", strings.Join(errs, "\n"))
 	}
 	return nil
 }
@@ -121,11 +121,11 @@ func (srv *Labels) CopyLabels(from, to interface{}) error {
 			Name:  label.Name,
 			Color: label.Color,
 		}); err != nil {
-			errs = append(errs, fmt.Sprintf("create label '%s' failed: %v", label.Name, err))
+			errs = append(errs, fmt.Sprintf("'%s' failed to create: %v", label.Name, err))
 		}
 	}
 	if len(errs) > 0 {
-		return fmt.Errorf("error: failed to copy (some) labels with the following errors:\n%s", strings.Join(errs, "\n"))
+		return fmt.Errorf("failed to copy (some) labels with the following errors:\n%s", strings.Join(errs, "\n"))
 	}
 	return nil
 }

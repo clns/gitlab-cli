@@ -9,6 +9,7 @@ import (
 	"log"
 
 	"github.com/clns/gitlab-cli/gitlab"
+	"github.com/howeyc/gopass"
 	"github.com/spf13/viper"
 	gogitlab "github.com/xanzy/go-gitlab"
 )
@@ -84,19 +85,20 @@ func (r *Repo) initialize() error {
 	var err error
 	r.URL, err = url.Parse(r.Url_)
 	if err != nil {
-		return fmt.Errorf("invalid repo url: %v\n", err)
+		return fmt.Errorf("invalid repo url: %v", err)
 	}
 	if r.URL.String() == "" {
-		return fmt.Errorf("empty repo url\n")
+		return fmt.Errorf("empty repo url")
 	}
 	if r.URL.Path == "" || strings.Index(r.URL.Path, "/") == -1 {
-		return fmt.Errorf("invalid or no repo path specified\n")
+		return fmt.Errorf("invalid or no repo path specified")
 	}
 	if r.Client, err = r.client(); err != nil {
-		return fmt.Errorf("failed to get GitLab client for repo '%s': %v\n", r.URL, err)
+		return fmt.Errorf("failed to get GitLab client for repo '%s': %v", r.URL, err)
 	}
+	r.Token = r.Client.Token
 	if r.Project, err = r.project(); err != nil {
-		return fmt.Errorf("failed to get GitLab project '%s': %v\n", r.URL, err)
+		return fmt.Errorf("failed to get GitLab project '%s': %v", r.URL, err)
 	}
 	return nil
 }
@@ -104,6 +106,14 @@ func (r *Repo) initialize() error {
 func (r *Repo) client() (*gitlab.Client, error) {
 	u := *r.URL
 	u.Path = ""
+	if r.Token == "" && user != "" {
+		if password == "" {
+			fmt.Print("Password: ")
+			pwd, _ := gopass.GetPasswdMasked()
+			password = string(pwd)
+		}
+		return gitlab.NewClientForUser(&u, user, password)
+	}
 	return gitlab.NewClient(&u, r.Token)
 }
 

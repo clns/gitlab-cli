@@ -17,7 +17,7 @@ If given without an argument, it will copy global labels. If <from-repo>
 is specified, it will copy all labels from that repository. This argument
 can be a repo name as in the config file or a path (e.g. 'myuser/myrepo').
 In the later case it will use --url, without its path.`,
-	Example: `  $ gitlab label copy -u https://gitlab.com/user/myrepo -t <TOKEN>
+	Example: `  $ gitlab label copy -U https://gitlab.com/user/myrepo -t <TOKEN>
   # = copy global labels into 'user/myrepo'
 
   $ gitlab label copy -r myrepo myotherrepo
@@ -51,14 +51,14 @@ In the later case it will use --url, without its path.`,
 		if from == nil {
 			// we need to copy the global labels
 			if err := to.Client.Labels.CopyGlobalLabelsTo(*to.Project.ID); err != nil {
-				fmt.Fprintf(os.Stderr, "error: failed to copy global labels to '%s': %v\n",
+				fmt.Fprintf(os.Stderr, "error: '%s': %v\n",
 					*to.Project.PathWithNamespace, err)
 				os.Exit(1)
 			}
 		} else {
 			// we need to copy labels from one project to another
 			if err := to.Client.Labels.CopyLabels(*from.Project.ID, *to.Project.ID); err != nil {
-				fmt.Fprintf(os.Stderr, "error: failed to copy labels from '%s' to '%s': %v\n",
+				fmt.Fprintf(os.Stderr, "error: '%s' to '%s': %v\n",
 					*from.Project.PathWithNamespace, *to.Project.PathWithNamespace, err)
 				os.Exit(1)
 			}

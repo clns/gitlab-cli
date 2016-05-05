@@ -11,7 +11,7 @@ import (
 var configRepoSaveCmd = &cobra.Command{
 	Use:     "save",
 	Short:   "Save repo into the config file",
-	Example: `  $ gitlab config repo save -r myrepo -u https://gitlan.com/user/repo -t <TOKEN>`,
+	Example: `  $ gitlab config repo save -r myrepo -U https://gitlan.com/user/repo -t <TOKEN>`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if repo == "" {
 			fmt.Fprintf(os.Stderr, "error: no repo name given\n")

@@ -15,17 +15,19 @@ const GitLabAPI = "/api/v3/"
 // additional methods and initializes with a URL.
 type Client struct {
 	*gogitlab.Client
+	Token string
 
 	Projects *Projects
 	Labels   *Labels
 }
 
 // NewClient returns a Client object that can be used to make API calls.
-// If instead of token you have username and password, you should call
-// SetTokenForUser() on the returned object, providing an empty token string.
+// If instead of token you have username and password, you should use
+// NewClientForUser().
 func NewClient(uri *url.URL, token string) (*Client, error) {
 	c := &Client{
 		Client: getClient(token),
+		Token:  token,
 	}
 	if err := c.Client.SetBaseURL(uri.String() + GitLabAPI); err != nil {
 		return nil, err
@@ -37,22 +39,30 @@ func NewClient(uri *url.URL, token string) (*Client, error) {
 	return c, nil
 }
 
-// SetTokenForUser sets the token for the given user on the GitLab client.
-func (c *Client) SetTokenForUser(user, pass string) error {
+// NewClientForUser is the same as NewClient but uses an user instead
+// of a private token to authenticate.
+func NewClientForUser(uri *url.URL, user, pass string) (*Client, error) {
+	c, err := NewClient(uri, "")
+	if err != nil {
+		return nil, err
+	}
+	t, err := c.getTokenForUser(user, pass)
+	if err != nil {
+		return nil, err
+	}
+	return NewClient(uri, t)
+}
+
+// getTokenForUser returns the token for the given user.
+func (c *Client) getTokenForUser(user, pass string) (string, error) {
 	sess, _, err := c.Client.Session.GetSession(&gogitlab.GetSessionOptions{
 		Login:    user,
 		Password: pass,
 	})
 	if err != nil {
-		return err
+		return "", err
 	}
-	c.SetToken(sess.PrivateToken)
-	return nil
-}
-
-// SetToken sets the given token on the GitLab client.
-func (c *Client) SetToken(token string) {
-	c.Client = getClient(token)
+	return sess.PrivateToken, nil
 }
 
 // getClient returns a gitlab client with a timeout and https check disabled.

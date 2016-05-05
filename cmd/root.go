@@ -11,6 +11,7 @@ import (
 var (
 	cfgFile              string
 	repo, repourl, token string
+	user, password       string
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -43,8 +44,10 @@ func init() {
 
 	// Repository flags
 	RootCmd.PersistentFlags().StringVarP(&repo, "repo", "r", "", "repo name (as in the config file)")
-	RootCmd.PersistentFlags().StringVarP(&repourl, "url", "u", "", "repository URL, including the path")
-	RootCmd.PersistentFlags().StringVarP(&token, "token", "t", "", "GitLab token")
+	RootCmd.PersistentFlags().StringVarP(&repourl, "url", "U", "", "repository URL, including the path (e.g. https://mygitlab.com/group/repo)")
+	RootCmd.PersistentFlags().StringVarP(&token, "token", "t", "", "GitLab token (see http://doc.gitlab.com/ce/api/#authentication)")
+	RootCmd.PersistentFlags().StringVarP(&user, "user", "u", "", "GitLab login (user or email), if no token provided")
+	RootCmd.PersistentFlags().StringVarP(&password, "password", "p", "", "GitLab password, if no token provided (if empty, will prompt)")
 
 	viper.BindPFlag("_url", RootCmd.PersistentFlags().Lookup("url"))
 	viper.BindPFlag("_token", RootCmd.PersistentFlags().Lookup("token"))
