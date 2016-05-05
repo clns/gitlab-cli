@@ -30,6 +30,12 @@ var RootCmd = &cobra.Command{
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	helpFunc := RootCmd.HelpFunc()
+	RootCmd.SetHelpFunc(func(cmd *cobra.Command, args []string) {
+		initVerbose()
+		CheckUpdate()
+		helpFunc(cmd, args)
+	})
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
@@ -39,6 +45,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	cobra.OnInitialize(initVerbose)
+	cobra.OnInitialize(CheckUpdate)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports Persistent Flags, which, if defined here,
@@ -52,7 +59,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&token, "token", "t", "", "GitLab token (see http://doc.gitlab.com/ce/api/#authentication)")
 	RootCmd.PersistentFlags().StringVarP(&user, "user", "u", "", "GitLab login (user or email), if no token provided")
 	RootCmd.PersistentFlags().StringVarP(&password, "password", "p", "", "GitLab password, if no token provided (if empty, will prompt)")
-	RootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Print logs")
+	RootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "print logs")
 
 	viper.BindPFlag("_url", RootCmd.PersistentFlags().Lookup("url"))
 	viper.BindPFlag("_token", RootCmd.PersistentFlags().Lookup("token"))
