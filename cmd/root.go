@@ -30,12 +30,10 @@ var RootCmd = &cobra.Command{
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	helpFunc := RootCmd.HelpFunc()
-	RootCmd.SetHelpFunc(func(cmd *cobra.Command, args []string) {
-		initVerbose()
-		CheckUpdate()
-		helpFunc(cmd, args)
-	})
+	if !verbose {
+		log.SetOutput(ioutil.Discard)
+	}
+	CheckUpdate()
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
@@ -44,8 +42,6 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	cobra.OnInitialize(initVerbose)
-	cobra.OnInitialize(CheckUpdate)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports Persistent Flags, which, if defined here,
@@ -79,11 +75,5 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
-}
-
-func initVerbose() {
-	if !verbose {
-		log.SetOutput(ioutil.Discard)
 	}
 }
