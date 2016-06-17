@@ -2,23 +2,26 @@
 
 CLI commands for performing actions against GitLab repositories. The main reasons for building this tool is to be able to use it without any prerequisites and to deal with global labels, which GitLab API doesn't expose.
 
+- [Installation](#installation)
 - [Usage](#usage)
   - [Labels](#labels)
   - [Specifying a repository](#specifying-a-repository)
   - [The config file](#the-config-file)
-- [Install](#install)
-  - [Update](#update)
 - [Development](#development)
+
+## Installation
+
+Follow the instructions from the [releases page](https://github.com/clns/gitlab-cli/releases).
 
 ## Usage
 
-See help for all available commands (`gitlab-cli -h`).
+For all available commands see the command's help: `gitlab-cli -h`. The most common commands are documented below.
 
 ### Labels
 
-##### Copy global labels into a target repository
+#### Copy global labels into a repository
 
-> GitLab Limitation: Currently there's no way to [access global labels through the API](https://twitter.com/gitlab/status/724619173477924865), so this tool provides a workaround for copying them into a repository. Note that you should configure the global labels manually in GitLab.
+GitLab Limitation: Currently there's no way to [access global labels through the API](https://twitter.com/gitlab/status/724619173477924865), so this tool provides a workaround to copy them.
 
 ```sh
 gitlab-cli label copy -U https://gitlab.com/<USER>/<REPO> -t <TOKEN>
@@ -26,7 +29,7 @@ gitlab-cli label copy -U https://gitlab.com/<USER>/<REPO> -t <TOKEN>
 
 > Tip: To avoid specifying `-U` and `-t` every time you refer to a repository, you can use the config file to save the details of it. See [Specifying a repository](#specifying-a-repository).
 
-##### Copy labels from one repository to another
+#### Copy labels from one repository to another
 
 ```sh
 gitlab-cli label copy -r <NAME> <GROUP>/<REPO>
@@ -34,7 +37,7 @@ gitlab-cli label copy -r <NAME> <GROUP>/<REPO>
 
 > Tip: The above command copies labels between repositories on the same GitLab instance. To copy from/to a different GitLab instance, use the config file as explained in [Specifying a repository](#specifying-a-repository).
 
-##### Update label(s) based on a regex match
+#### Update labels that match a regex
 
 ```sh
 gitlab-cli label update -r <NAME> --match <REGEX> --replace <REPLACE> --color <COLOR>
@@ -42,7 +45,7 @@ gitlab-cli label update -r <NAME> --match <REGEX> --replace <REPLACE> --color <C
 
 > Note: `<REGEX>` is a Go regex string as in <https://golang.org/pkg/regexp/syntax> and `<REPLACE>` is a replacement string as in <https://golang.org/pkg/regexp/#Regexp.FindAllString>.
 
-##### Delete label(s) that match a regex
+#### Delete labels that match a regex
 
 ```sh
 gitlab-cli label update -r <NAME> --regex <REGEX>
@@ -50,7 +53,7 @@ gitlab-cli label update -r <NAME> --regex <REGEX>
 
 ### TODO
 
-Currently only the label commands are useful. Other commands can be added as needed. Feel free to open pull requests or issues.
+Other commands can be added as needed. Feel free to open pull requests or issues.
 
 ### Specifying a repository
 
@@ -105,22 +108,6 @@ But there's no need to manually edit this file. Instead use the config commands 
 - `gitlab-cli config repo ls` - list all saved repositories
 - `gitlab-cli config repo save ...` - save a repository
 - `gitlab-cli config repo show -r <repo>` - show the details of a saved repository
-
-## Install
-
-1. Follow the instructions from the [releases page](https://github.com/clns/gitlab-cli/releases) and run the `curl` command, which the releases page specifies, in your terminal.
-
-    > Note: If you get a "Permission denied" error, your `/usr/local/bin` directory probably isn't writable and you'll need to install Compose as the superuser. Run `sudo -i`, then the commands from the release page, then `exit`.
-
-2. Test the installation.
-
-    ```sh
-    gitlab-cli version
-    ```
-
-### Update
-
-When running any command, the tool will notify you if a new update is available (e.g. `New update available: 1.0.1. Run 'gitlab-cli update' to update.`), and you can simply run `gitlab-cli update` to update.
 
 ## Development
 
