@@ -71,6 +71,6 @@ func getClient(token string) *gogitlab.Client {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
-	client := &http.Client{Transport: tr, Timeout: 30 * time.Second}
+	client := &http.Client{Transport: tr, Timeout: 5 * time.Minute}
 	return gogitlab.NewClient(client, token)
 }
