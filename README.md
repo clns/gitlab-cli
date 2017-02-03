@@ -29,13 +29,21 @@ gitlab-cli label copy -U https://gitlab.com/<USER>/<REPO> -t <TOKEN>
 
 > Tip: To avoid specifying `-U` and `-t` every time you refer to a repository, you can use the config file to save the details of it. See [Specifying a repository](#specifying-a-repository).
 
-#### Copy labels from one repository to another
+#### Copy labels from repoA to repoB
 
 ```sh
 gitlab-cli label copy -r <NAME> <GROUP>/<REPO>
 ```
 
 > Tip: The above command copies labels between repositories on the same GitLab instance. To copy from/to a different GitLab instance, use the config file as explained in [Specifying a repository](#specifying-a-repository).
+
+##### Example
+
+If both repositories are added to the [config file](#specifying-a-repository) as `repoA` and `repoB`, you can copy labels from repoA to repoB as follows:
+ 
+```sh
+gitlab-cli label copy -r repoB repoA
+```
 
 #### Update labels that match a regex
 
@@ -113,6 +121,11 @@ But there's no need to manually edit this file. Instead use the config commands 
 
 You'll need a [Go dev environment](https://golang.org/doc/install).
 
+```sh
+git clone https://github.com/xanzy/go-gitlab
+git submodule --init update
+```
+
 ### Build
 
 ```sh
@@ -135,14 +148,14 @@ You can spin up a GitLab instance using [Docker](https://www.docker.com/):
 docker pull gitlab/gitlab-ce
 docker run -d --name gitlab -p 8055:80 gitlab/gitlab-ce
 sleep 60 # allow enough time for GitLab to start
-docker exec gitlab \
-  sudo -u gitlab-psql \
-    /opt/gitlab/embedded/bin/psql --port 5432 -h /var/opt/gitlab/postgresql -d gitlabhq_production -c " \
-      INSERT INTO labels (title, color, template) VALUES ('feature', '#000000', true); \
-      INSERT INTO labels (title, color, template) VALUES ('bug', '#ff0000', true); \
-      UPDATE users SET authentication_token='secret' WHERE username='root';"
+docker exec -ti gitlab bash
+su gitlab-psql
+/opt/gitlab/embedded/bin/psql --port 5432 -h /var/opt/gitlab/postgresql -d gitlabhq_production -c " \
+          INSERT INTO labels (title, color, template, description, description_html) VALUES ('feature', '#000000', true, 'represents a feature', 'represents a <b>feature</b>'); \
+          INSERT INTO labels (title, color, template, description, description_html) VALUES ('bug', '#ff0000', true, 'represents a bug', 'represents a <b>bug</b>'); \
+          UPDATE users SET authentication_token='secret' WHERE username='root';"
 
 # Note: you may need to change GITLAB_URL to point to your docker container.
 # 'http://docker' is for Docker beta for Windows. 
-GITLAB_URL="http://docker:8055" GITLAB_TOKEN="secret" go test -v ./gitlab
+GITLAB_URL="http://localhost:8055" GITLAB_TOKEN="secret" go test -v ./gitlab
 ```
