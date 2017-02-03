@@ -11,6 +11,7 @@ import (
 var matchLabel string
 var replaceLabel string
 var colorLabel string
+var descriptionLabel string
 
 var labelUpdateCmd = &cobra.Command{
 	Use:     "update",
@@ -31,10 +32,11 @@ name. At least one of --replace or --color is required to update the label(s).`,
 			os.Exit(1)
 		}
 
-		if err := to.Client.Labels.UpdateWithRegex(*to.Project.ID, &gogitlab.UpdateLabelOptions{
-			Name:    matchLabel,
-			NewName: replaceLabel,
-			Color:   colorLabel,
+		if err := to.Client.Labels.UpdateWithRegex(to.Project.ID, &gogitlab.UpdateLabelOptions{
+			Name:        &matchLabel,
+			NewName:     &replaceLabel,
+			Color:       &colorLabel,
+			Description: &descriptionLabel,
 		}); err != nil {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err.Error())
 			os.Exit(1)
@@ -48,4 +50,5 @@ func init() {
 	labelUpdateCmd.Flags().StringVar(&matchLabel, "match", "", "Label name to match, as a Go regex (https://golang.org/pkg/regexp/syntax)")
 	labelUpdateCmd.Flags().StringVar(&replaceLabel, "replace", "", "Label name replacement (https://golang.org/pkg/regexp/#Regexp.FindAllString)")
 	labelUpdateCmd.Flags().StringVar(&colorLabel, "color", "", "Label color (e.g. '#000000')")
+	labelUpdateCmd.Flags().StringVar(&descriptionLabel, "description", "", "Label description")
 }

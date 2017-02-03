@@ -29,7 +29,7 @@ labels that match. If ommitted, all repository labels will be deleted.`,
 			os.Exit(1)
 		}
 
-		if err := to.Client.Labels.DeleteWithRegex(*to.Project.ID, regexpLabel); err != nil {
+		if err := to.Client.Labels.DeleteWithRegex(to.Project.ID, regexpLabel); err != nil {
 			fmt.Fprintf(os.Stderr, "error: %v\n", err.Error())
 			os.Exit(1)
 		}

@@ -56,8 +56,8 @@ func NewClientForUser(uri *url.URL, user, pass string) (*Client, error) {
 // getTokenForUser returns the token for the given user.
 func (c *Client) getTokenForUser(user, pass string) (string, error) {
 	sess, _, err := c.Client.Session.GetSession(&gogitlab.GetSessionOptions{
-		Login:    user,
-		Password: pass,
+		Login:    &user,
+		Password: &pass,
 	})
 	if err != nil {
 		return "", err

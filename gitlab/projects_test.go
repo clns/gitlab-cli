@@ -12,15 +12,15 @@ func TestProjects_ByPath(t *testing.T) {
 		path string
 	}
 	tests := []*_test{
-		&_test{*proj.PathWithNamespace},
+		&_test{proj.PathWithNamespace},
 	}
 	for _, test := range tests {
 		proj, err := GitLabClient.Projects.ByPath(test.path)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if *proj.PathWithNamespace != test.path {
-			t.Errorf("expecting '%s', got '%s'\n", test.path, *proj.PathWithNamespace)
+		if proj.PathWithNamespace != test.path {
+			t.Errorf("expecting '%s', got '%s'\n", test.path, proj.PathWithNamespace)
 		}
 	}
 	tests = []*_test{
@@ -29,7 +29,7 @@ func TestProjects_ByPath(t *testing.T) {
 	for _, test := range tests {
 		proj, err := GitLabClient.Projects.ByPath(test.path)
 		if _, ok := err.(*NotFound); !ok {
-			t.Fatalf("expecting not found, got: %s", *proj.PathWithNamespace)
+			t.Fatalf("expecting not found, got: %s", proj.PathWithNamespace)
 		}
 	}
 }

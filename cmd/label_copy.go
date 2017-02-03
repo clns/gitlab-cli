@@ -50,16 +50,16 @@ In the later case it will use --url, without its path.`,
 
 		if from == nil {
 			// we need to copy the global labels
-			if err := to.Client.Labels.CopyGlobalLabelsTo(*to.Project.ID); err != nil {
+			if err := to.Client.Labels.CopyGlobalLabelsTo(to.Project.ID); err != nil {
 				fmt.Fprintf(os.Stderr, "error: '%s': %v\n",
-					*to.Project.PathWithNamespace, err)
+					to.Project.PathWithNamespace, err)
 				os.Exit(1)
 			}
 		} else {
 			// we need to copy labels from one project to another
-			if err := to.Client.Labels.CopyLabels(*from.Project.ID, *to.Project.ID); err != nil {
+			if err := to.Client.Labels.CopyLabels(from.Project.ID, to.Project.ID); err != nil {
 				fmt.Fprintf(os.Stderr, "error: '%s' to '%s': %v\n",
-					*from.Project.PathWithNamespace, *to.Project.PathWithNamespace, err)
+					from.Project.PathWithNamespace, to.Project.PathWithNamespace, err)
 				os.Exit(1)
 			}
 		}

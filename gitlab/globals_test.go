@@ -41,14 +41,10 @@ func before(tb testing.TB) {
 // creates a minimal gitlab project with a random string appended
 // to the given name.
 func createProject(tb testing.TB, name, desc string) *gogitlab.Project {
+	n := name + RandomString(4)
 	proj, _, err := GitLabClient.Projects.CreateProject(&gogitlab.CreateProjectOptions{
-		Name:                 name + RandomString(4),
-		Description:          desc,
-		IssuesEnabled:        false,
-		MergeRequestsEnabled: false,
-		WikiEnabled:          false,
-		SnippetsEnabled:      false,
-		Public:               false,
+		Name:        &n,
+		Description: &desc,
 	})
 	if err != nil {
 		// The failure happens at wherever we were called, not here
@@ -62,7 +58,7 @@ func createProject(tb testing.TB, name, desc string) *gogitlab.Project {
 }
 
 func deleteProject(tb testing.TB, proj *gogitlab.Project) {
-	if _, err := GitLabClient.Projects.DeleteProject(*proj.ID); err != nil {
+	if _, err := GitLabClient.Projects.DeleteProject(proj.ID); err != nil {
 		// The failure happens at wherever we were called, not here
 		_, file, line, ok := runtime.Caller(1)
 		if !ok {

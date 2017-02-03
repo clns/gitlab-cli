@@ -29,7 +29,7 @@ func (srv *Projects) ByPath(path string) (proj *gogitlab.Project, err error) {
 		return nil, fmt.Errorf("incorrect path: %v", path)
 	}
 	findProject := func(p *gogitlab.Project) bool {
-		if *p.PathWithNamespace == path {
+		if p.PathWithNamespace == path {
 			proj = p
 			return true
 		}

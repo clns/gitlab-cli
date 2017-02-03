@@ -25,7 +25,7 @@ type Labels struct {
 //
 // If at least one label fails to update, it will return an error.
 func (srv *Labels) UpdateWithRegex(pid interface{}, opts *gogitlab.UpdateLabelOptions) error {
-	re, err := regexp.Compile(opts.Name)
+	re, err := regexp.Compile(*opts.Name)
 	if err != nil {
 		return fmt.Errorf("'%s' is not a valid Go regexp: %v\n"+
 			"See https://golang.org/pkg/regexp/syntax/", opts.Name, err)
@@ -38,12 +38,14 @@ func (srv *Labels) UpdateWithRegex(pid interface{}, opts *gogitlab.UpdateLabelOp
 	var errs []string
 	for _, label := range labels {
 		if re.MatchString(label.Name) {
-			opts.Name = label.Name
-			if repl != "" {
-				opts.NewName = re.ReplaceAllString(label.Name, repl)
+			opts.Name = &label.Name
+			var newName string
+			if repl != nil && *repl != "" {
+				newName = re.ReplaceAllString(label.Name, *repl)
 			} else {
-				opts.NewName = ""
+				newName = ""
 			}
+			opts.NewName = &newName
 			if _, _, err := srv.UpdateLabel(pid, opts); err != nil {
 				errs = append(errs, fmt.Sprintf("'%s' failed to update: %v", label.Name, err))
 			}
@@ -69,7 +71,7 @@ func (srv *Labels) DeleteWithRegex(pid interface{}, pattern string) error {
 	}
 	for _, label := range labels {
 		if pattern == "" || re.MatchString(label.Name) {
-			_, err := srv.DeleteLabel(pid, &gogitlab.DeleteLabelOptions{Name: label.Name})
+			_, err := srv.DeleteLabel(pid, &gogitlab.DeleteLabelOptions{Name: &label.Name})
 			if err != nil {
 				return err
 			}
@@ -85,25 +87,22 @@ func (srv *Labels) DeleteWithRegex(pid interface{}, pattern string) error {
 //
 // If at least one label fails to copy, it will return an error.
 func (srv *Labels) CopyGlobalLabelsTo(pid interface{}) error {
+	name := "temporary-copy-globals-from-" + RandomString(4)
+	desc := "Temporary repository to copy global labels from"
 	proj, _, err := srv.client.Projects.CreateProject(&gogitlab.CreateProjectOptions{
-		Name:                 "temporary-copy-globals-from-" + RandomString(4),
-		Description:          "Temporary repository to copy global labels from",
-		IssuesEnabled:        false,
-		MergeRequestsEnabled: false,
-		WikiEnabled:          false,
-		SnippetsEnabled:      false,
-		Public:               false,
+		Name:        &name,
+		Description: &desc,
 	})
 	if err != nil {
 		return err
 	}
 	defer func() {
-		if _, err := srv.client.Projects.DeleteProject(*proj.ID); err != nil {
+		if _, err := srv.client.Projects.DeleteProject(proj.ID); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
 	}()
 
-	return srv.CopyLabels(*proj.ID, pid)
+	return srv.CopyLabels(proj.ID, pid)
 }
 
 // CopyLabels copies the labels from a project into another one,
@@ -118,8 +117,8 @@ func (srv *Labels) CopyLabels(from, to interface{}) error {
 	var errs []string
 	for _, label := range labels {
 		if _, _, err := srv.CreateLabel(to, &gogitlab.CreateLabelOptions{
-			Name:  label.Name,
-			Color: label.Color,
+			Name:  &label.Name,
+			Color: &label.Color,
 		}); err != nil {
 			errs = append(errs, fmt.Sprintf("'%s' failed to create: %v", label.Name, err))
 		}
