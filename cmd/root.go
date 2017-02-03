@@ -16,6 +16,7 @@ var (
 	repo, repourl, token string
 	user, password       string
 	verbose              bool
+	configName           = ".gitlab-cli"
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -67,9 +68,9 @@ func initConfig() {
 		viper.SetConfigFile(cfgFile)
 	}
 
-	viper.SetConfigName(".gitlab-cli") // name of config file (without extension)
-	viper.AddConfigPath("$HOME")       // adding home directory as first search path
-	viper.AutomaticEnv()               // read in environment variables that match
+	viper.SetConfigName(configName) // name of config file (without extension)
+	viper.AddConfigPath("$HOME")    // adding home directory as first search path
+	viper.AutomaticEnv()            // read in environment variables that match
 	viper.ConfigFileUsed()
 
 	// If a config file is found, read it in.

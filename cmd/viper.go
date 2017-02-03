@@ -1,18 +1,26 @@
 package cmd
 
 import (
-	"os"
-
 	"fmt"
-
+	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 )
 
 func SaveViperConfig() error {
-	f, err := os.Create(viper.ConfigFileUsed())
+	filename := viper.ConfigFileUsed()
+	if filename == "" {
+		hdir, err := homedir.Dir()
+		if err != nil {
+			return err
+		}
+		filename = filepath.Join(hdir, configName+".yml")
+	}
+	f, err := os.Create(filename)
 	if err != nil {
 		return err
 	}
