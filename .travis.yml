@@ -12,17 +12,17 @@ before_install:
   - sleep 120 # GitLab is like a sloth
 
 install: |
-  docker exec gitlab sudo -u gitlab-psql /opt/gitlab/embedded/bin/psql --port 5432 -h /var/opt/gitlab/postgresql -d gitlabhq_production -c "
-    INSERT INTO labels (title, color, template) VALUES ('feature', '#000000', true);
-    INSERT INTO labels (title, color, template) VALUES ('bug', '#ff0000', true);
-    UPDATE users SET authentication_token='secret' WHERE username='root';"
+  docker exec gitlab runuser -l gitlab-psql -c '/opt/gitlab/embedded/bin/psql --port 5432 -h /var/opt/gitlab/postgresql -d gitlabhq_production -c "
+    INSERT INTO labels (title, color, template, description, description_html) VALUES ('"'"'feature'"'"', '"'"'#000000'"'"', true, '"'"'represents a feature'"'"', '"'"'represents a <b>feature</b>'"'"');
+    INSERT INTO labels (title, color, template, description, description_html) VALUES ('"'"'bug'"'"', '"'"'#ff0000'"'"', true, '"'"'represents a bug'"'"', '"'"'represents a <b>bug</b>'"'"');
+    UPDATE users SET authentication_token='"'"'secret'"'"' WHERE username='"'"'root'"'"';"'
 
 script:
-  - GITLAB_URL="http://127.0.0.1" GITLAB_TOKEN="secret" GO15VENDOREXPERIMENT="1" go test -v ./gitlab
+  - GITLAB_URL="http://127.0.0.1" GITLAB_TOKEN="secret" go test -v ./gitlab
 
 go:
-  - 1.5
   - 1.6
+  - 1.7
   - tip
 
 matrix:
