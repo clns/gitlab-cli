@@ -20,8 +20,8 @@ var labelUpdateCmd = &cobra.Command{
 	Long: `Update labels in a repository.
 
 The --match flag is required and is a Go regex that will be used to match the label
-name. At least one of --replace or --color is required to update the label(s).`,
-	Example: `  $ gitlab label update -r myrepo --match "(.*):(.*)" --replace "${1}/${2}"`,
+name. At least one of --name, --color or --description is required to update the label(s).`,
+	Example: `  $ gitlab label update -r myrepo --match "(.*):(.*)" --name "${1}/${2}"`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			to  *Repo
@@ -48,7 +48,7 @@ func init() {
 	labelCmd.AddCommand(labelUpdateCmd)
 
 	labelUpdateCmd.Flags().StringVar(&matchLabel, "match", "", "Label name to match, as a Go regex (https://golang.org/pkg/regexp/syntax)")
-	labelUpdateCmd.Flags().StringVar(&replaceLabel, "replace", "", "Label name replacement (https://golang.org/pkg/regexp/#Regexp.FindAllString)")
+	labelUpdateCmd.Flags().StringVar(&replaceLabel, "name", "", "Label name (https://golang.org/pkg/regexp/#Regexp.FindAllString)")
 	labelUpdateCmd.Flags().StringVar(&colorLabel, "color", "", "Label color (e.g. '#000000')")
 	labelUpdateCmd.Flags().StringVar(&descriptionLabel, "description", "", "Label description")
 }

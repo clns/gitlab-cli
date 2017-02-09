@@ -1,10 +1,14 @@
 # gitlab-cli [![Build Status](https://travis-ci.org/clns/gitlab-cli.svg?branch=master)](https://travis-ci.org/clns/gitlab-cli)
 
-CLI commands for performing actions against GitLab repositories. The main reasons for building this tool is to be able to use it without any prerequisites and to deal with global labels, which GitLab API doesn't expose.
+CLI commands for performing actions against GitLab repositories.
 
 - [Installation](#installation)
 - [Usage](#usage)
   - [Labels](#labels)
+    - [Copy global labels](#copy-global-labels-into-a-repository)
+    - [Copy labels from repoA to repoB](#copy-labels-from-repoa-to-repob)
+    - [Update labels](#update-labels-that-match-a-regex)
+    - [Delete labels](#delete-labels-that-match-a-regex)
   - [Specifying a repository](#specifying-a-repository)
   - [The config file](#the-config-file)
 - [Development](#development)
@@ -32,31 +36,23 @@ gitlab-cli label copy -U https://gitlab.com/<USER>/<REPO> -t <TOKEN>
 #### Copy labels from repoA to repoB
 
 ```sh
-gitlab-cli label copy -r <NAME> <GROUP>/<REPO>
+gitlab-cli label copy --from <repoA> -r <repoB>
 ```
 
-> Tip: The above command copies labels between repositories on the same GitLab instance. To copy from/to a different GitLab instance, use the config file as explained in [Specifying a repository](#specifying-a-repository).
-
-##### Example
-
-If both repositories are added to the [config file](#specifying-a-repository) as `repoA` and `repoB`, you can copy labels from repoA to repoB as follows:
- 
-```sh
-gitlab-cli label copy -r repoB repoA
-```
+> Tip: For repositories on the same installation, you can specify the `--from` repo as `group/repo`, as a convenience, in which case the repository is considered on the same GitLab instance as the target repo.
 
 #### Update labels that match a regex
 
 ```sh
-gitlab-cli label update -r <NAME> --match <REGEX> --replace <REPLACE> --color <COLOR>
+gitlab-cli label update -r <NAME> --match <REGEX> --name <NAME> --color <COLOR> --description <DESC>
 ```
 
-> Note: `<REGEX>` is a Go regex string as in <https://golang.org/pkg/regexp/syntax> and `<REPLACE>` is a replacement string as in <https://golang.org/pkg/regexp/#Regexp.FindAllString>.
+> Note: `<REGEX>` is a Go regex string as in <https://golang.org/pkg/regexp/syntax> and `<NAME>` is a replacement string as in <https://golang.org/pkg/regexp/#Regexp.FindAllString>.
 
 #### Delete labels that match a regex
 
 ```sh
-gitlab-cli label update -r <NAME> --regex <REGEX>
+gitlab-cli label delete -r <NAME> --match <REGEX>
 ```
 
 ### TODO
@@ -72,18 +68,18 @@ There are 2 ways to specify a repository:
 
 Example:
 
+Instead of this:
+
 ```sh
 gitlab-cli label copy -U https://git.my-site.com/my_group/my_repo -t ghs93hska
 ```
 
-is the same as this, but the repo gets saved in the config file and we can refer to it later by its name:
+you can first save the repo in the config file and refer to it by name on all subsequent commands:
 
 ```sh
 gitlab-cli config repo save -r myrepo -U https://git.my-site.com/my_group/my_repo -t ghs93hska
 gitlab-cli label copy -r myrepo
 ```
-
-> Note: Some commands like [`label copy`](#copy-labels-from-one-repository-to-another) allow you to specify a repository by its path (e.g. `my_group/my_repo`), in which case the repository is considered on the same GitLab instance as the target repo.
 
 #### Using user and password instead of token
 

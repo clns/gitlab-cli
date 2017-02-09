@@ -7,42 +7,34 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var fromRepo string
+
 var labelCopyCmd = &cobra.Command{
-	Use:     "copy [<from-repo>]",
+	Use:     "copy",
 	Aliases: []string{"c"},
 	Short:   "Copy labels into a repository",
 	Long: `Copy labels into a repository.
 
-If given without an argument, it will copy global labels. If <from-repo>
-is specified, it will copy all labels from that repository. This argument
-can be a repo name as in the config file or a path (e.g. 'myuser/myrepo').
-In the later case it will use --url, without its path.`,
-	Example: `  $ gitlab label copy -U https://gitlab.com/user/myrepo -t <TOKEN>
-  # = copy global labels into 'user/myrepo'
+If --from is omitted, it will copy global labels. If --from is specified,
+it will copy all labels from that repository.
 
-  $ gitlab label copy -r myrepo myotherrepo
-  # = copy labels from 'myotherrepo' into 'myrepo'`,
+The from repo can be a repo name as in the config file or a relative path
+as group/repo (e.g. 'myuser/myrepo'). In the later case it will use the url
+of the target repo, so the repositories need to be on the same GitLab instance.`,
+	Example: `  $ gitlab label copy -U https://gitlab.com/user/myrepo -t <TOKEN>
+  $ gitlab label copy --from sourceRepo -r targetRepo
+  $ gitlab label copy --from group/repo -r targetRepo`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) > 1 {
-			fmt.Fprintln(os.Stderr, "error: invalid arguments")
-			cmd.Usage()
-			os.Exit(2)
-		}
 		var (
 			from, to *Repo
 			err      error
 		)
-		if len(args) == 0 {
-			if to, err = LoadFromConfig(repo); err != nil {
-				fmt.Fprintf(os.Stderr, "error: invalid target repository: %v\n", err.Error())
-				os.Exit(1)
-			}
-		} else if len(args) == 1 {
-			if to, err = LoadFromConfig(repo); err != nil {
-				fmt.Fprintf(os.Stderr, "error: invalid target repository: %v\n", err.Error())
-				os.Exit(1)
-			}
-			if from, err = LoadFromConfig(args[0]); err != nil {
+		if to, err = LoadFromConfig(repo); err != nil {
+			fmt.Fprintf(os.Stderr, "error: invalid target repository: %v\n", err.Error())
+			os.Exit(1)
+		}
+		if fromRepo != "" {
+			if from, err = LoadFromConfig(fromRepo); err != nil {
 				fmt.Fprintf(os.Stderr, "error: invalid source repository: %v\n", err.Error())
 				os.Exit(1)
 			}
@@ -68,4 +60,6 @@ In the later case it will use --url, without its path.`,
 
 func init() {
 	labelCmd.AddCommand(labelCopyCmd)
+
+	labelCopyCmd.Flags().StringVar(&fromRepo, "from", "", "Source repository (optional)")
 }

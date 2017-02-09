@@ -19,6 +19,9 @@ var updateCmd = &cobra.Command{
 	Use:     "update",
 	Aliases: []string{"u"},
 	Short:   "Update this tool to the latest version",
+	Long: `Update this tool to the latest version.
+
+You might need to run this command with sudo.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		rel, err := getLatestRelease()
 		if err != nil {
@@ -137,7 +140,11 @@ func CheckUpdate() {
 
 func printUpdateAvl(latest string) {
 	if latest != Version {
-		fmt.Printf("New update available: %s. Run 'gitlab-cli update' to update.\n", latest)
+		if runtime.GOOS == "linux" {
+			fmt.Printf("New update available: %s. Run 'sudo gitlab-cli update' to update.\n", latest)
+		} else {
+			fmt.Printf("New update available: %s. Run 'gitlab-cli update' to update.\n", latest)
+		}
 	}
 }
 

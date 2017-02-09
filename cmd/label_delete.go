@@ -15,10 +15,10 @@ var labelDeleteCmd = &cobra.Command{
 	Short:   "Delete labels from a repository",
 	Long: `Delete labels from a repository.
 
-The --regex flag can be specified as a Go regexp pattern to delete only
+The --match flag can be specified as a Go regexp pattern to delete only
 labels that match. If ommitted, all repository labels will be deleted.`,
 	Example: `  $ gitlab label delete -r myrepo
-  $ gitlab label delete -r myrepo --regexp=".*:.*"`,
+  $ gitlab label delete -r myrepo --match=".*:.*"`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			to  *Repo
@@ -39,5 +39,5 @@ labels that match. If ommitted, all repository labels will be deleted.`,
 func init() {
 	labelCmd.AddCommand(labelDeleteCmd)
 
-	labelDeleteCmd.Flags().StringVar(&regexpLabel, "regex", "", "Label name to match, as a Go regex (https://golang.org/pkg/regexp/syntax)")
+	labelDeleteCmd.Flags().StringVar(&regexpLabel, "match", "", "Label name to match, as a Go regex (https://golang.org/pkg/regexp/syntax)")
 }

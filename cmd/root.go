@@ -22,7 +22,7 @@ var (
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "gitlab-cli",
-	Short: "GitLab CLI tool",
+	Short: "Cli tool for performing actions against GitLab repositories",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
