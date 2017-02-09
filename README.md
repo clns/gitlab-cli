@@ -39,6 +39,8 @@ gitlab-cli label copy -U https://gitlab.com/<USER>/<REPO> -t <TOKEN>
 gitlab-cli label copy --from <repoA> -r <repoB>
 ```
 
+repoA and repoB are repository names saved in the [config file](#specifying-a-repository).
+
 > Tip: For repositories on the same installation, you can specify the `--from` repo as `group/repo`, as a convenience, in which case the repository is considered on the same GitLab instance as the target repo.
 
 #### Update labels that match a regex
