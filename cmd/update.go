@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -88,7 +89,7 @@ func shouldCheckForUpdate() bool {
 
 func getLatestRelease() (rel *github.RepositoryRelease, err error) {
 	gh := github.NewClient(&http.Client{Timeout: 1 * time.Second})
-	rel, _, err = gh.Repositories.GetLatestRelease("clns", "gitlab-cli")
+	rel, _, err = gh.Repositories.GetLatestRelease(context.Background(), "clns", "gitlab-cli")
 	return
 }
 
