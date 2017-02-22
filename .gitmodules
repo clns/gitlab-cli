@@ -4,3 +4,21 @@
 [submodule "vendor/github.com/mitchellh/go-homedir"]
 	path = vendor/github.com/mitchellh/go-homedir
 	url = https://github.com/mitchellh/go-homedir
+[submodule "vendor/github.com/google/go-github"]
+	path = vendor/github.com/google/go-github
+	url = https://github.com/google/go-github
+[submodule "vendor/github.com/howeyc/gopass"]
+	path = vendor/github.com/howeyc/gopass
+	url = https://github.com/howeyc/gopass
+[submodule "vendor/github.com/inconshreveable/go-update"]
+	path = vendor/github.com/inconshreveable/go-update
+	url = https://github.com/inconshreveable/go-update
+[submodule "vendor/github.com/spf13/cobra"]
+	path = vendor/github.com/spf13/cobra
+	url = https://github.com/spf13/cobra
+[submodule "vendor/github.com/spf13/viper"]
+	path = vendor/github.com/spf13/viper
+	url = https://github.com/spf13/viper
+[submodule "vendor/github.com/google/go-querystring"]
+	path = vendor/github.com/google/go-querystring
+	url = https://github.com/google/go-querystring
