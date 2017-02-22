@@ -120,7 +120,8 @@ But there's no need to manually edit this file. Instead use the config commands 
 You'll need a [Go dev environment](https://golang.org/doc/install).
 
 ```sh
-git clone https://github.com/xanzy/go-gitlab
+git clone https://github.com/clns/gitlab-cli
+cd gitlab-cli
 git submodule --init update
 ```
 
@@ -157,3 +158,11 @@ su gitlab-psql
 # 'http://docker' is for Docker beta for Windows. 
 GITLAB_URL="http://localhost:8055" GITLAB_TOKEN="secret" go test -v ./gitlab
 ```
+
+### Vendored dependencies
+
+All external dependencies should be available in the [vendor/](vendor) directory.
+
+To list all dependencies run `go list -f '{{.ImportPath}}:{{"\n"}}  {{join .Imports "\n  "}}' ./...`.
+
+To vendor a package run `git submodule add https://github.com/google/go-github vendor/github.com/google/go-github`.

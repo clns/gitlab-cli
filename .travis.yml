@@ -21,8 +21,8 @@ script:
   - GITLAB_URL="http://127.0.0.1" GITLAB_TOKEN="secret" go test -v ./gitlab
 
 go:
-  - 1.6
   - 1.7
+  - 1.8
   - tip
 
 matrix:
