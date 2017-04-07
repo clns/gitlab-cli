@@ -117,8 +117,9 @@ func (srv *Labels) CopyLabels(from, to interface{}) error {
 	var errs []string
 	for _, label := range labels {
 		if _, _, err := srv.CreateLabel(to, &gogitlab.CreateLabelOptions{
-			Name:  &label.Name,
-			Color: &label.Color,
+			Name:        &label.Name,
+			Color:       &label.Color,
+			Description: &label.Description,
 		}); err != nil {
 			errs = append(errs, fmt.Sprintf("'%s' failed to create: %v", label.Name, err))
 		}
