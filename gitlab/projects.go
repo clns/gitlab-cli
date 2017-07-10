@@ -25,9 +25,6 @@ func (e *NotFound) Error() string {
 func (srv *Projects) ByPath(path string) (proj *gogitlab.Project, err error) {
 	path = strings.TrimPrefix(strings.TrimSuffix(path, ".git"), "/")
 	p := strings.Split(path, "/")
-	if len(p) != 2 {
-		return nil, fmt.Errorf("incorrect path: %v", path)
-	}
 	findProject := func(p *gogitlab.Project) bool {
 		if p.PathWithNamespace == path {
 			proj = p
